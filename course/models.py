@@ -2,6 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.core.files import File
 from django.conf import settings
+from django.conf import settings
 
 from io import BytesIO
 from PIL import Image
@@ -15,7 +16,9 @@ class Category(models.Model):
 
 class Course(models.Model):
     course_title = models.CharField(max_length=244)
-    slug = models.CharField(auto_created=course_title)
+    course_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='course_author',
+                                      on_delete=models.CASCADE, null=True, default='')
+    slug = models.CharField(auto_created=course_title, max_length=255)
     description = models.CharField(max_length=244)
     price = models.FloatField()
     image = models.ImageField(upload_to="media/uploads/", blank=True, null=True, default=" ")
