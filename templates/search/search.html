@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+
+{% block content %}
+
+    <div>
+
+        <h1 class="mt-2 mb-2">{% if type %}{{ category.name }}{% else %} List of courses {% endif %}</h1>
+
+        <form action="{% url 'course_list_search' %}" method="get" class="form form-group">
+           <div class="container border">
+              <label class="mt-2">SEARCH FOR A COURSE : </label>
+              <input name="search" type="" placeholder="key" class="form-control">
+              <input type="submit" value="search" class="mt-2 mb-2 btn btn-success">
+          </div>
+        </form>
+
+    </div>
+
+{% endblock %}
