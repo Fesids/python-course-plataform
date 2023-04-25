@@ -13,6 +13,9 @@ class Category(models.Model):
     name = models.CharField(max_length=50)
     slug = models.SlugField()
 
+    def __str__(self):
+        return self.name
+
 
 class Course(models.Model):
     course_title = models.CharField(max_length=244)
@@ -21,10 +24,12 @@ class Course(models.Model):
     slug = models.CharField(auto_created=course_title, max_length=255)
     description = models.CharField(max_length=244)
     price = models.FloatField()
-    image = models.ImageField(upload_to="media/uploads/", blank=True, null=True, default=" ")
-    thumbnail = models.ImageField(upload_to="media/uploads/", blank=True, null=True, default=" ")
+    image = models.ImageField(upload_to="uploads/books", blank=True, null=True, default=" ")
+    thumbnail = models.ImageField(upload_to="uploads/books", blank=True, null=True, default=" ")
     category = models.ForeignKey(Category, related_name="course_category",
                                  on_delete=models.CASCADE)
+    students = models.ManyToManyField(settings.AUTH_USER_MODEL, related_name='students_joined',
+                                      blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
 
@@ -67,3 +72,24 @@ class Course(models.Model):
 
             else:
                 return ''
+
+
+
+class Comment(models.Model):
+    course = models.ForeignKey(Course, related_name='comments', on_delete=models.CASCADE)
+    username = models.CharField(max_length=80)
+    email = models.EmailField()
+    body = models.TextField()
+    createdAt = models.DateTimeField(auto_now_add=True)
+    updatedAt = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['createdAt']
+
+    def __str__(self):
+        return f'Comment by {self.username} on {self.course}'
+
+
+
+
+

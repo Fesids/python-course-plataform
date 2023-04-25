@@ -30,6 +30,9 @@ INSTALLED_APPS = [
     'course.apps.CourseConfig',
     'accounts.apps.AccountsConfig',
     'user_profile.apps.UserProfileConfig',
+
+    # 3rd party
+    'djoser'
 ]
 
 MIDDLEWARE = [

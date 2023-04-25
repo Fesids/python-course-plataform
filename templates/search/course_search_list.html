@@ -11,14 +11,11 @@
       <div class="list-course-all">
         {% for c in results %}
           <div class="container border mt-3 mb-3 course">
-            <a href="">
-              <h3>{{ c.course_title }}</h3>
-            </a>
             <p>
               <img src="{{ c.image.url }}" width="150" height="200">
             </p>
-            <h5>author : {{ c.course_author }}</h5>
-            <h5>type : {{ c.category }}</h5>
+            <h3><a href="{% url 'detail_course' c.pk %}">{{ c.course_title }}</a></h3>
+            <h3>R$ {{ c.price }}</h3>
           </div>
 
         {% empty %}

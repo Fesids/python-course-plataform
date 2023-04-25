@@ -10,7 +10,7 @@ class UserProfile(models.Model):
     phone = models.CharField(max_length=25, default=' ')
     city = models.CharField(max_length=45, default=' ')
     email = models.EmailField(max_length=244)
-    profile_image = models.ImageField(upload_to='media/uploads/profile',
+    profile_image = models.ImageField(upload_to='uploads/profile',
                                       blank=True, null=True, default='')
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -19,4 +19,5 @@ class UserProfile(models.Model):
         ordering = ("-created_at",)
 
     def __str__(self):
-        return f'{self.first_name} {self.last_name}'
+        #return f'{self.first_name} {self.last_name}'
+        return self.email

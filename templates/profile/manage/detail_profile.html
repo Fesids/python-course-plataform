@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div class="container">
+
+        <p>
+            <img src="{{ profile.profile_image.url }}" width="150" height="200">
+            <h2>{{ profile.first_name}} {{ profile.last_name }}</h2>
+            <p>{{ profile.phone }}</p>
+            <p>{{ profile.city }}</p>
+        </p>
+
+        <p class="mt-4">
+            <a href="{% url 'profile_update' %}">update profile</a> |
+            <a href="{% url 'own_course_list' %}">see your course</a> |
+            <a href="{% url 'courses_you_are_enroll' %}">courses you are enroll</a>
+        </p>
+    </div>
+
+{% endblock content %}

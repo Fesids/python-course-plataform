@@ -1,0 +1,22 @@
+{% extends 'base.html' %}
+
+{% block content %}
+    <div>
+        <h2>Courses you are enrolled</h2>
+        {% for c in courses %}
+            <div>
+                <p>
+                  <img src="{{ c.image.url }}" width="150" height="200">
+                </p>
+                <h3><a href="{% url 'detail_course' c.pk %}">{{ c.course_title }}</a></h3>
+                <h3>R$ {{ c.price }}</h3>
+
+                <a href="{% url 'profile_detail' %}"><- back</a>
+            </div>
+        {% empty %}
+            <p>You are not enrolled in any course</p>
+            <a href="{% url 'profile_detail' %}"><- back</a>
+        {% endfor %}
+    </div>
+
+{% endblock %}
