@@ -2,7 +2,7 @@ from django.db import models
 from django.urls import reverse
 from django.core.files import File
 from django.conf import settings
-from django.conf import settings
+
 
 from io import BytesIO
 from PIL import Image
@@ -73,15 +73,16 @@ class Course(models.Model):
             else:
                 return ''
 
-
-
 class Comment(models.Model):
     course = models.ForeignKey(Course, related_name='comments', on_delete=models.CASCADE)
+    comment_author = models.ForeignKey(settings.AUTH_USER_MODEL, related_name='user',
+                                       on_delete=models.CASCADE)
     username = models.CharField(max_length=80)
     email = models.EmailField()
     body = models.TextField()
     createdAt = models.DateTimeField(auto_now_add=True)
     updatedAt = models.DateTimeField(auto_now=True)
+    active = models.BooleanField(default=True)
 
     class Meta:
         ordering = ['createdAt']

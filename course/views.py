@@ -6,19 +6,52 @@ from django.db.models import Q
 from django.utils.text import slugify
 from django.urls import reverse, reverse_lazy
 from django.contrib.auth.mixins import LoginRequiredMixin
-from .models import Course
-from .forms import CourseCreateForm
+from .models import Course, Comment
+from .forms import CourseCreateForm, CommentForm, UpdateCommentForm
 
 
 class CourseGenericMixin(TemplateResponseMixin,View):
     model = Course
 
-
-class CourseDetail(generic.DetailView):
-    model = Course
+class CourseDetail(generic.DetailView, CourseGenericMixin):
+    #model = Course
+    course = None
+    comment = None
+    comments = None
     template_name = "course/manage/course_detail.html"
 
+    def get_formset(self, request, data=None):
+        return CommentForm(data=data)
 
+    def dispatch(self, request, *args, **kwargs):
+        pk = kwargs.get("pk")
+        self.course = get_object_or_404(Course, id=pk)
+        self.comments = Comment.objects.filter(course=self.course, active=True)
+        return super().dispatch(request, pk)
+
+    def get(self, request, *args, **kwargs):
+        form = self.get_formset(request)
+        return self.render_to_response({
+            "course": self.course,
+            "form": form,
+            "comments": self.comments
+        })
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_formset(request, request.POST)
+
+        if form.is_valid():
+            self.comment = form.save(commit=False)
+            self.comment.username = request.user.username
+            self.comment.email = request.user.email
+            self.comment.course = self.course
+            self.comment.comment_author = request.user
+
+            self.comment.save()
+            return redirect("detail_course", pk=self.course.pk)
+        return self.render_to_response({
+            "added": True
+        })
 class CourseDelete(generic.DeleteView, CourseGenericMixin):
     template_name = "course/manage/course_delete.html"
     context_object_name = 'course'
@@ -193,4 +226,69 @@ class CourseYouAreEnroll(CourseGenericMixin):
             "courses": self.courses
         })
 
+
+## Comment views
+
+
+class UpdateComment(CourseGenericMixin):
+
+    template_name = 'comment/manage/update_comment.html'
+    course = None
+    comment = None
+
+    def get_formset(self, data=None):
+        return UpdateCommentForm(data=data, instance=self.comment)
+
+    def dispatch(self, request, *args, **kwargs):
+        course_id = kwargs.get("course_id")
+        comment_id = kwargs.get("comment_id")
+        self.course = get_object_or_404(Course, id=course_id)
+        self.comment = get_object_or_404(Comment, course=self.course, id=comment_id)
+        return super().dispatch(request, kwargs)
+
+    def get(self, request, *args, **kwargs):
+        form = self.get_formset()
+        return self.render_to_response({
+            "comment": self.comment,
+            "form": form
+        })
+
+    def post(self, request, *args, **kwargs):
+        form = self.get_formset(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect("detail_course", pk=self.course.pk)
+
+        return self.render_to_response({
+            "form": form
+        })
+
+
+class DeleteComment(CourseGenericMixin):
+    template_name = 'comment/manage/delete_comment.html'
+    course = None
+    comment = None
+
+    def dispatch(self, request, *args, **kwargs):
+        course_id = kwargs.get("course_id")
+        comment_id = kwargs.get("comment_id")
+        self.course = get_object_or_404(Course, id=course_id)
+        self.comment = get_object_or_404(Comment, course=self.course, id=comment_id)
+        return super().dispatch(request, kwargs)
+
+    def get(self, request, *args, **kwargs):
+        return self.render_to_response({
+            "comment": self.comment
+        })
+
+    def post(self, request, *args, **kwargs):
+        id = kwargs.get("comment_id")
+        comment_to_delete = self.comment
+
+        if comment_to_delete:
+            comment_to_delete.delete()
+            return redirect("detail_course", pk=self.course.pk)
+        return self.render_to_response({
+            "deleted": True
+        })
 

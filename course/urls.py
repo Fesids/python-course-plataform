@@ -12,5 +12,10 @@ urlpatterns = [
 
     path("enroll/<int:id>/", views.EnrollStudent.as_view(), name='enroll_to_course'),
     path("courses_you_are_enroll/", views.CourseYouAreEnroll.as_view(), name='courses_you_are_enroll'),
-    path("unroll/<int:id>/", views.UnrollStudents.as_view(), name="unroll_course")
+    path("unroll/<int:id>/", views.UnrollStudents.as_view(), name="unroll_course"),
+
+    # comments paths
+
+    path("detail/<int:course_id>/comments/<int:comment_id>/update/", views.UpdateComment.as_view(),name="update_course_comment"),
+    path("detail/<int:course_id>/comments/<int:comment_id>/delete/", views.DeleteComment.as_view(),name="delete_course_comment")
 ]
